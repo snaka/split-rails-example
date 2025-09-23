@@ -1,0 +1,95 @@
+<% layout_type = ab_test(:todo_list_layout) %>
+
+<div class="mb-6 flex justify-between items-center">
+  <h2 class="text-2xl font-bold">My Todos</h2>
+  <% button_class = case ab_test(:button_color)
+    when "green" then "bg-green-500 hover:bg-green-700"
+    when "purple" then "bg-purple-500 hover:bg-purple-700"
+    else "bg-blue-500 hover:bg-blue-700"
+  end %>
+  <%= link_to "New Todo", new_todo_path, class: "#{button_class} text-white font-bold py-2 px-4 rounded" %>
+</div>
+
+<% if @todos.empty? %>
+  <div class="text-center py-12">
+    <p class="text-gray-500 text-lg">No todos yet. Create your first todo!</p>
+  </div>
+<% else %>
+  <% case layout_type %>
+  <% when "card_view" %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <% @todos.each do |todo| %>
+        <div class="bg-white rounded-lg shadow p-4">
+          <h3 class="font-bold text-lg mb-2 <%= 'line-through text-gray-400' if todo.completed %>">
+            <%= todo.title %>
+          </h3>
+          <p class="text-gray-600 mb-3"><%= todo.description %></p>
+          <div class="mb-3">
+            <% priority_display = case ab_test(:priority_labels)
+              when "text_labels"
+                {1 => "Critical", 2 => "High", 3 => "Medium", 4 => "Low", 5 => "Minimal"}[todo.priority]
+              when "color_coded"
+                colors = {1 => "red", 2 => "orange", 3 => "yellow", 4 => "green", 5 => "gray"}
+                "<span class='px-2 py-1 text-xs rounded-full bg-#{colors[todo.priority]}-200 text-#{colors[todo.priority]}-800'>P#{todo.priority}</span>".html_safe
+              else
+                "Priority: #{todo.priority}"
+            end %>
+            <%= priority_display %>
+          </div>
+          <div class="flex justify-between">
+            <%= link_to "Edit", edit_todo_path(todo), class: "text-blue-600 hover:text-blue-900" %>
+            <%= button_to "Delete", todo_path(todo), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-900" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% when "grid_view" %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <% @todos.each do |todo| %>
+        <div class="bg-white rounded shadow p-4 flex items-center justify-between">
+          <div class="flex-1">
+            <h3 class="font-semibold <%= 'line-through text-gray-400' if todo.completed %>">
+              <%= todo.title %>
+            </h3>
+            <p class="text-sm text-gray-600"><%= todo.description %></p>
+          </div>
+          <div class="ml-4 text-right">
+            <%= link_to "Edit", edit_todo_path(todo), class: "text-sm text-blue-600" %>
+            <%= button_to "Delete", todo_path(todo), method: :delete, class: "text-sm text-red-600 ml-2" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="bg-white shadow overflow-hidden rounded-md">
+      <ul class="divide-y divide-gray-200">
+        <% @todos.each do |todo| %>
+          <li class="px-6 py-4 hover:bg-gray-50">
+            <div class="flex items-center justify-between">
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900 <%= 'line-through' if todo.completed %>">
+                  <%= todo.title %>
+                </p>
+                <p class="text-sm text-gray-500"><%= todo.description %></p>
+              </div>
+              <div class="ml-4 flex items-center space-x-2">
+                <% priority_display = case ab_test(:priority_labels)
+                  when "text_labels"
+                    {1 => "Critical", 2 => "High", 3 => "Medium", 4 => "Low", 5 => "Minimal"}[todo.priority]
+                  when "color_coded"
+                    colors = {1 => "red", 2 => "orange", 3 => "yellow", 4 => "green", 5 => "gray"}
+                    "<span class='px-2 py-1 text-xs rounded-full bg-#{colors[todo.priority]}-200 text-#{colors[todo.priority]}-800'>P#{todo.priority}</span>".html_safe
+                  else
+                    "P#{todo.priority}"
+                end %>
+                <span class="text-sm"><%= priority_display %></span>
+                <%= link_to "Edit", edit_todo_path(todo), class: "text-blue-600 hover:text-blue-900 text-sm" %>
+                <%= button_to "Delete", todo_path(todo), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-900 text-sm" %>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+<% end %>

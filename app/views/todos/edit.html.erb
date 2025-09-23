@@ -1,0 +1,48 @@
+<div class="max-w-2xl mx-auto">
+  <h2 class="text-2xl font-bold mb-6">Edit Todo</h2>
+
+  <%= form_with model: @todo, local: true do |form| %>
+    <% if @todo.errors.any? %>
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <ul>
+          <% @todo.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="mb-4">
+      <%= form.label :title, class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <%= form.text_field :title, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :description, class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <%= form.text_area :description, rows: 4, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :priority, class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <%= form.select :priority, options_for_select([[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]], @todo.priority), {}, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+      <p class="text-gray-600 text-sm mt-1">1 = Highest priority, 5 = Lowest priority</p>
+    </div>
+
+    <div class="mb-6">
+      <%= form.label :completed, class: "inline-flex items-center" do %>
+        <%= form.check_box :completed, class: "mr-2" %>
+        <span class="text-gray-700 text-sm font-bold">Mark as completed</span>
+      <% end %>
+    </div>
+
+    <div class="flex items-center justify-between">
+      <% button_class = case ab_test(:button_color)
+        when "green" then "bg-green-500 hover:bg-green-700"
+        when "purple" then "bg-purple-500 hover:bg-purple-700"
+        else "bg-blue-500 hover:bg-blue-700"
+      end %>
+      <%= form.submit "Update Todo", class: "#{button_class} text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" %>
+      <%= link_to "Cancel", todos_path, class: "text-gray-600 hover:text-gray-900" %>
+    </div>
+  <% end %>
+</div>
