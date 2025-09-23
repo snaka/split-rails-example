@@ -23,6 +23,10 @@ class SplitTestDataGenerator
 
     @experiments.each do |experiment_name, config|
       puts "Processing experiment: #{experiment_name}" if @verbose
+
+      # Create experiment configuration in Redis
+      setup_experiment(experiment_name, config)
+
       generate_experiment_data(experiment_name, config)
     end
 
@@ -33,18 +37,41 @@ class SplitTestDataGenerator
   def clear_data
     puts "Clearing existing Split test data..."
 
-    # Get all Split-related keys
-    keys = @redis.keys('split:*')
+    # Get all experiment keys (pattern: experiment_name:alternative)
+    experiment_keys = []
+    @experiments.each do |experiment_name, config|
+      config[:alternatives].each do |alternative|
+        experiment_keys << "#{experiment_name}:#{alternative}"
+      end
+    end
 
-    if keys.any?
-      @redis.del(*keys)
-      puts "Cleared #{keys.length} Split keys"
+    # Also clear configuration keys and catalogs
+    config_keys = @experiments.keys.map { |name| "experiment_configurations/#{name}" }
+    old_keys = @redis.keys('split:*')
+    catalog_key = ['experiments']
+    all_keys = experiment_keys + config_keys + old_keys + catalog_key
+
+    if all_keys.any?
+      @redis.del(*all_keys)
+      puts "Cleared #{all_keys.length} keys"
     else
-      puts "No Split data found to clear"
+      puts "No data found to clear"
     end
   end
 
   private
+
+  def setup_experiment(experiment_name, config)
+    # Set up experiment configuration in the format Split expects
+    config_key = "experiment_configurations/#{experiment_name}"
+    @redis.hmset(config_key,
+      "resettable", "true",
+      "algorithm", "Split::Algorithms::WeightedSample"
+    )
+
+    # Store experiment in catalog
+    @redis.sadd("experiments", experiment_name)
+  end
 
   def load_experiments
     {
@@ -187,24 +214,20 @@ class SplitTestDataGenerator
   end
 
   def record_participation(experiment_name, alternative, user_id)
-    # Split stores participation data in Redis
-    # Key format: split:{experiment_name}:{alternative}
-    key = "split:#{experiment_name}:#{alternative}"
-    @redis.sadd(key, user_id)
+    # Split stores participation data in Redis using the format: {experiment_name}:{alternative}
+    key = "#{experiment_name}:#{alternative}"
 
-    # Also store in the main experiment key
-    @redis.hset("split:#{experiment_name}", alternative, @redis.scard(key))
+    # Increment participant count in the hash
+    @redis.hincrby(key, "participant_count", 1)
   end
 
   def record_conversion(experiment_name, alternative, goal, user_id)
-    # Store conversion data
-    # Key format: split:{experiment_name}:{alternative}:{goal}
-    conversion_key = "split:#{experiment_name}:#{alternative}:#{goal}"
-    @redis.sadd(conversion_key, user_id)
+    # Store conversion data using Split's format: {experiment_name}:{alternative}
+    key = "#{experiment_name}:#{alternative}"
 
-    # Update conversion counts
-    conversion_count_key = "split:#{experiment_name}:#{alternative}:#{goal}:count"
-    @redis.incr(conversion_count_key)
+    # Increment completed count for the specific goal
+    field = goal.nil? ? "completed_count" : "completed_count:#{goal}"
+    @redis.hincrby(key, field, 1)
   end
 
   def print_summary
@@ -220,15 +243,15 @@ class SplitTestDataGenerator
       experiment_conversions = 0
 
       config[:alternatives].each do |alternative|
-        # Count participants
-        participant_key = "split:#{experiment_name}:#{alternative}"
-        participants = @redis.scard(participant_key)
+        # Count participants using Split's key format
+        key = "#{experiment_name}:#{alternative}"
+        participants = @redis.hget(key, "participant_count").to_i
         experiment_participants += participants
 
         # Count conversions
         config[:goals].each do |goal|
-          conversion_key = "split:#{experiment_name}:#{alternative}:#{goal}"
-          conversions = @redis.scard(conversion_key)
+          field = "completed_count:#{goal}"
+          conversions = @redis.hget(key, field).to_i
           experiment_conversions += conversions
         end
       end
@@ -248,7 +271,7 @@ class SplitTestDataGenerator
     puts "Total Conversions: #{total_conversions}"
     puts "Overall Conversion Rate: #{total_participants > 0 ? ((total_conversions.to_f / total_participants) * 100).round(2) : 0}%"
     puts ""
-    puts "Redis Keys Created: #{@redis.keys('split:*').length}"
+    puts "Redis Keys Created: #{@redis.keys('*:*').length}"
   end
 end
 
