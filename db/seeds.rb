@@ -55,6 +55,34 @@ user2.todos.create!(
   completed: false
 )
 
+# Create public todos for demonstration
+Todo.create!(
+  title: "Welcome to our Todo App",
+  description: "This is a sample public todo that everyone can see",
+  priority: 1,
+  completed: false,
+  public: true,
+  user: user1
+)
+
+Todo.create!(
+  title: "Check out our A/B testing features",
+  description: "This app demonstrates Split gem integration for A/B testing",
+  priority: 2,
+  completed: false,
+  public: true,
+  user: user1
+)
+
+Todo.create!(
+  title: "Join our community",
+  description: "Sign up to create your own todos and join the community",
+  priority: 3,
+  completed: false,
+  public: true,
+  user: user2
+)
+
 puts "Seed data created successfully!"
 puts "You can login with:"
 puts "  Email: test@example.com, Password: password"

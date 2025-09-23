@@ -1,11 +1,15 @@
 class TodosController < ApplicationController
   include Split::Helper
 
-  before_action :require_login
+  before_action :require_login, except: [:index]
   before_action :set_todo, only: [:show, :edit, :update, :destroy]
 
   def index
-    @todos = current_user.todos.order(priority: :asc, created_at: :desc)
+    if logged_in?
+      @todos = current_user.todos.order(priority: :asc, created_at: :desc)
+    else
+      @todos = Todo.where(public: true).order(priority: :asc, created_at: :desc)
+    end
   end
 
   def show

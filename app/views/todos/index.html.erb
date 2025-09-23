@@ -1,18 +1,22 @@
 <% layout_type = ab_test(:todo_list_layout) %>
 
 <div class="mb-6 flex justify-between items-center">
-  <h2 class="text-2xl font-bold">My Todos</h2>
-  <% button_class = case ab_test(:button_color)
-    when "green" then "bg-green-500 hover:bg-green-700"
-    when "purple" then "bg-purple-500 hover:bg-purple-700"
-    else "bg-blue-500 hover:bg-blue-700"
-  end %>
-  <%= link_to "New Todo", new_todo_path, class: "#{button_class} text-white font-bold py-2 px-4 rounded" %>
+  <h2 class="text-2xl font-bold"><%= logged_in? ? "My Todos" : "Public Todos" %></h2>
+  <% if logged_in? %>
+    <% button_class = case ab_test(:button_color)
+      when "green" then "bg-green-500 hover:bg-green-700"
+      when "purple" then "bg-purple-500 hover:bg-purple-700"
+      else "bg-blue-500 hover:bg-blue-700"
+    end %>
+    <%= link_to "New Todo", new_todo_path, class: "#{button_class} text-white font-bold py-2 px-4 rounded" %>
+  <% else %>
+    <%= link_to "Login to create todos", login_path, class: "bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded" %>
+  <% end %>
 </div>
 
 <% if @todos.empty? %>
   <div class="text-center py-12">
-    <p class="text-gray-500 text-lg">No todos yet. Create your first todo!</p>
+    <p class="text-gray-500 text-lg"><%= logged_in? ? "No todos yet. Create your first todo!" : "No public todos available." %></p>
   </div>
 <% else %>
   <% case layout_type %>
@@ -36,10 +40,12 @@
             end %>
             <%= priority_display %>
           </div>
-          <div class="flex justify-between">
-            <%= link_to "Edit", edit_todo_path(todo), class: "text-blue-600 hover:text-blue-900" %>
-            <%= button_to "Delete", todo_path(todo), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-900" %>
-          </div>
+          <% if logged_in? %>
+            <div class="flex justify-between">
+              <%= link_to "Edit", edit_todo_path(todo), class: "text-blue-600 hover:text-blue-900" %>
+              <%= button_to "Delete", todo_path(todo), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-900" %>
+            </div>
+          <% end %>
         </div>
       <% end %>
     </div>
@@ -53,10 +59,12 @@
             </h3>
             <p class="text-sm text-gray-600"><%= todo.description %></p>
           </div>
-          <div class="ml-4 text-right">
-            <%= link_to "Edit", edit_todo_path(todo), class: "text-sm text-blue-600" %>
-            <%= button_to "Delete", todo_path(todo), method: :delete, class: "text-sm text-red-600 ml-2" %>
-          </div>
+          <% if logged_in? %>
+            <div class="ml-4 text-right">
+              <%= link_to "Edit", edit_todo_path(todo), class: "text-sm text-blue-600" %>
+              <%= button_to "Delete", todo_path(todo), method: :delete, class: "text-sm text-red-600 ml-2" %>
+            </div>
+          <% end %>
         </div>
       <% end %>
     </div>
@@ -83,8 +91,10 @@
                     "P#{todo.priority}"
                 end %>
                 <span class="text-sm"><%= priority_display %></span>
-                <%= link_to "Edit", edit_todo_path(todo), class: "text-blue-600 hover:text-blue-900 text-sm" %>
-                <%= button_to "Delete", todo_path(todo), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-900 text-sm" %>
+                <% if logged_in? %>
+                  <%= link_to "Edit", edit_todo_path(todo), class: "text-blue-600 hover:text-blue-900 text-sm" %>
+                  <%= button_to "Delete", todo_path(todo), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-900 text-sm" %>
+                <% end %>
               </div>
             </div>
           </li>
