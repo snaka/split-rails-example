@@ -1,0 +1,333 @@
+<div class="container mx-auto px-4 py-8">
+  <header class="<%= header_style_class %>">
+    <h1>Interactive Demo</h1>
+    <p class="text-gray-600 mt-2">Experience all A/B testing features in action</p>
+  </header>
+
+  <div class="mt-8 grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <!-- Sidebar Navigation -->
+    <aside class="<%= sidebar_layout_class %> bg-gray-50 p-4 rounded-lg">
+      <h3 class="font-semibold mb-4">Demo Sections</h3>
+      <nav class="space-y-2">
+        <a href="#loading" class="block text-blue-600 hover:text-blue-800">Loading States</a>
+        <a href="#pagination" class="block text-blue-600 hover:text-blue-800">Pagination</a>
+        <a href="#sorting" class="block text-blue-600 hover:text-blue-800">Sorting</a>
+        <a href="#bulk-actions" class="block text-blue-600 hover:text-blue-800">Bulk Actions</a>
+        <a href="#previews" class="block text-blue-600 hover:text-blue-800">Previews</a>
+        <a href="#mobile" class="block text-blue-600 hover:text-blue-800">Mobile UI</a>
+      </nav>
+
+      <div class="mt-6 p-3 bg-white rounded border">
+        <h4 class="font-medium mb-2">Current Experiments</h4>
+        <div class="space-y-1 text-xs">
+          <p>Layout: <span class="font-mono"><%= @sidebar_layout %></span></p>
+          <p>Loading: <span class="font-mono"><%= @loading_animation %></span></p>
+          <p>Pagination: <span class="font-mono"><%= @pagination_size %></span></p>
+          <p>Sort: <span class="font-mono"><%= @sort_default %></span></p>
+        </div>
+      </div>
+
+      <%= link_to "Navigation Test", demo_action_path, method: :post,
+          params: { action_type: 'navigation_usage' },
+          remote: true,
+          class: "block mt-4 text-center px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm" %>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="lg:col-span-3 space-y-8">
+      <!-- Loading Animation Demo -->
+      <section id="loading" class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-bold mb-4">Loading Animation Test</h2>
+        <div class="flex items-center space-x-4">
+          <%= loading_animation_html %>
+          <div>
+            <p>Animation Type: <span class="font-mono text-sm"><%= @loading_animation %></span></p>
+            <%= link_to "Test User Retention", demo_action_path, method: :post,
+                params: { action_type: 'user_retention' },
+                remote: true,
+                class: "text-blue-600 hover:text-blue-800 underline text-sm" %>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pagination Demo -->
+      <section id="pagination" class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-bold mb-4">Pagination System (Page Size: <%= @page_size %>)</h2>
+
+        <div class="space-y-2 mb-4">
+          <% @paginated_todos.each do |todo| %>
+            <div class="flex items-center justify-between p-3 border rounded <%= todo[:completed] ? 'bg-green-50' : 'bg-gray-50' %>">
+              <div>
+                <h4 class="font-medium"><%= todo[:title] %></h4>
+                <p class="text-sm text-gray-600">Priority: <%= todo[:priority] %></p>
+              </div>
+              <div class="text-sm">
+                <%= todo[:completed] ? '✅ Complete' : '⏳ Pending' %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <div class="flex space-x-2">
+            <% (1..@total_pages).each do |page| %>
+              <%= link_to page, demo_path(page: page),
+                  class: "px-3 py-1 rounded #{@current_page == page ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'}" %>
+            <% end %>
+          </div>
+          <%= link_to "Track Page View", demo_action_path, method: :post,
+              params: { action_type: 'page_views' },
+              remote: true,
+              class: "text-blue-600 hover:text-blue-800 underline text-sm" %>
+        </div>
+      </section>
+
+      <!-- Sorting Demo -->
+      <section id="sorting" class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-bold mb-4">Default Sort: <%= @sort_default.humanize %></h2>
+        <div class="flex space-x-4 mb-4">
+          <%= link_to "Created Date", demo_path(sort: 'created_date'), class: "px-3 py-1 rounded bg-gray-200 hover:bg-gray-300" %>
+          <%= link_to "Priority", demo_path(sort: 'priority'), class: "px-3 py-1 rounded bg-gray-200 hover:bg-gray-300" %>
+          <%= link_to "Alphabetical", demo_path(sort: 'alphabetical'), class: "px-3 py-1 rounded bg-gray-200 hover:bg-gray-300" %>
+          <%= link_to "Track Sort Change", demo_action_path, method: :post,
+              params: { action_type: 'sort_changed' },
+              remote: true,
+              class: "px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600" %>
+        </div>
+      </section>
+
+      <!-- Bulk Actions Demo -->
+      <section id="bulk-actions" class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-bold mb-4">Bulk Actions: <%= @bulk_actions.humanize %></h2>
+        <% case @bulk_actions %>
+        <% when "checkbox" %>
+          <div class="space-y-2">
+            <% @demo_todos.first(3).each do |todo| %>
+              <label class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded">
+                <input type="checkbox" class="rounded">
+                <span><%= todo[:title] %></span>
+              </label>
+            <% end %>
+            <button class="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Delete Selected</button>
+          </div>
+        <% when "selection" %>
+          <div class="space-y-2">
+            <% @demo_todos.first(3).each do |todo| %>
+              <div class="p-2 border rounded hover:bg-blue-50 cursor-pointer">
+                <%= todo[:title] %>
+              </div>
+            <% end %>
+            <p class="text-sm text-gray-600">Click items to select, then use actions menu</p>
+          </div>
+        <% when "menu" %>
+          <div class="space-y-2">
+            <% @demo_todos.first(3).each do |todo| %>
+              <div class="flex items-center justify-between p-2 border rounded">
+                <span><%= todo[:title] %></span>
+                <div class="relative">
+                  <button class="px-2 py-1 text-gray-600 hover:text-gray-800">⋮</button>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+        <%= link_to "Test Bulk Operation", demo_action_path, method: :post,
+            params: { action_type: 'bulk_operation' },
+            remote: true,
+            class: "inline-block mt-4 text-blue-600 hover:text-blue-800 underline text-sm" %>
+      </section>
+
+      <!-- Preview Demo -->
+      <section id="previews" class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-bold mb-4">Todo Preview: <%= @todo_preview.humanize %></h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <% @demo_todos.first(2).each do |todo| %>
+            <div class="border rounded p-3 hover:shadow-md transition-shadow cursor-pointer"
+                 data-preview="<%= @todo_preview %>"
+                 data-todo-id="<%= todo[:id] %>">
+              <h4 class="font-medium"><%= todo[:title] %></h4>
+              <p class="text-sm text-gray-600 mt-1">Priority: <%= todo[:priority] %></p>
+              <% case @todo_preview %>
+              <% when "hover" %>
+                <p class="text-xs text-blue-600 mt-2">Hover for preview</p>
+              <% when "click" %>
+                <p class="text-xs text-blue-600 mt-2">Click for preview</p>
+              <% when "sidebar" %>
+                <p class="text-xs text-blue-600 mt-2">Select to show in sidebar</p>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+        <%= link_to "Track Preview Usage", demo_action_path, method: :post,
+            params: { action_type: 'preview_used' },
+            remote: true,
+            class: "inline-block mt-4 text-blue-600 hover:text-blue-800 underline text-sm" %>
+      </section>
+
+      <!-- Auto-save Demo -->
+      <section class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-bold mb-4">Auto-save: <%= @auto_save.humanize %></h2>
+        <textarea class="w-full p-3 border rounded"
+                  placeholder="Start typing to test auto-save..."
+                  data-autosave="<%= @auto_save %>"></textarea>
+        <p class="text-sm text-gray-600 mt-2">
+          Auto-save interval: <%= @auto_save.gsub('_', ' ') %>
+        </p>
+        <%= link_to "Track Data Saved", demo_action_path, method: :post,
+            params: { action_type: 'data_saved' },
+            remote: true,
+            class: "inline-block mt-4 text-blue-600 hover:text-blue-800 underline text-sm" %>
+      </section>
+
+      <!-- Mobile Navigation Demo -->
+      <section id="mobile" class="bg-white p-6 rounded-lg shadow lg:hidden">
+        <h2 class="text-xl font-bold mb-4">Mobile Navigation: <%= @mobile_navigation.humanize %></h2>
+        <% case @mobile_navigation %>
+        <% when "bottom_tabs" %>
+          <div class="bg-gray-100 p-4 rounded">
+            <p class="mb-4">Bottom tab navigation active</p>
+            <div class="flex justify-around border-t pt-2">
+              <button class="text-center">🏠<br>Home</button>
+              <button class="text-center">📝<br>Todos</button>
+              <button class="text-center">⚙️<br>Settings</button>
+            </div>
+          </div>
+        <% when "hamburger" %>
+          <div class="bg-gray-100 p-4 rounded">
+            <div class="flex items-center justify-between mb-4">
+              <span>Hamburger menu active</span>
+              <button class="text-2xl">☰</button>
+            </div>
+            <p class="text-sm text-gray-600">Tap hamburger to open side menu</p>
+          </div>
+        <% when "swipe" %>
+          <div class="bg-gray-100 p-4 rounded">
+            <p class="mb-4">Swipe navigation active</p>
+            <div class="text-center text-sm text-gray-600">
+              ← Swipe left/right to navigate →
+            </div>
+          </div>
+        <% end %>
+        <%= link_to "Test Mobile Navigation", demo_action_path, method: :post,
+            params: { action_type: 'mobile_navigation' },
+            remote: true,
+            class: "inline-block mt-4 text-blue-600 hover:text-blue-800 underline text-sm" %>
+      </section>
+
+      <!-- Additional Experiments -->
+      <section class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-bold mb-4">More A/B Tests</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <h4 class="font-medium">Collaboration UI: <%= @collaboration_ui %></h4>
+            <%= link_to "Test", demo_action_path, method: :post, params: { action_type: 'collaboration_started' }, remote: true, class: "text-blue-600 hover:text-blue-800 underline text-sm" %>
+          </div>
+          <div>
+            <h4 class="font-medium">Export Format: <%= @export_format %></h4>
+            <%= link_to "Test", demo_action_path, method: :post, params: { action_type: 'export_completed' }, remote: true, class: "text-blue-600 hover:text-blue-800 underline text-sm" %>
+          </div>
+          <div>
+            <h4 class="font-medium">Reminder Frequency: <%= @reminder_frequency %></h4>
+            <%= link_to "Test", demo_action_path, method: :post, params: { action_type: 'reminder_acted' }, remote: true, class: "text-blue-600 hover:text-blue-800 underline text-sm" %>
+          </div>
+          <div>
+            <h4 class="font-medium">Performance Metrics: <%= @performance_metrics %></h4>
+            <%= link_to "Test", demo_action_path, method: :post, params: { action_type: 'metrics_viewed' }, remote: true, class: "text-blue-600 hover:text-blue-800 underline text-sm" %>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Onboarding Flow Demo -->
+  <section class="mt-8 bg-white p-6 rounded-lg shadow">
+    <h2 class="text-xl font-bold mb-4">Onboarding Flow: <%= @onboarding_flow.humanize %></h2>
+    <% case @onboarding_flow %>
+    <% when "tour" %>
+      <div class="bg-blue-50 p-4 rounded border-l-4 border-blue-500">
+        <p>🎯 Interactive tour mode - Step 1 of 5</p>
+        <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Next Step</button>
+      </div>
+    <% when "checklist" %>
+      <div class="space-y-2">
+        <label class="flex items-center space-x-2">
+          <input type="checkbox" checked class="rounded">
+          <span>✅ Create your first todo</span>
+        </label>
+        <label class="flex items-center space-x-2">
+          <input type="checkbox" class="rounded">
+          <span>⏳ Set a priority level</span>
+        </label>
+        <label class="flex items-center space-x-2">
+          <input type="checkbox" class="rounded">
+          <span>⏳ Complete a task</span>
+        </label>
+      </div>
+    <% when "video" %>
+      <div class="bg-gray-100 p-8 rounded text-center">
+        <div class="text-6xl mb-4">▶️</div>
+        <p>Welcome Video - Getting Started Guide</p>
+        <button class="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Watch Tutorial</button>
+      </div>
+    <% end %>
+    <%= link_to "Complete Onboarding", demo_action_path, method: :post,
+        params: { action_type: 'onboarding_completed' },
+        remote: true,
+        class: "inline-block mt-4 px-4 py-2 " + button_color_class + " rounded" %>
+  </section>
+</div>
+
+<script>
+// Add some interactivity for demo purposes
+document.addEventListener('DOMContentLoaded', function() {
+  // Auto-save simulation
+  const textarea = document.querySelector('[data-autosave]');
+  if (textarea) {
+    const interval = textarea.dataset.autosave;
+    let timeout;
+
+    textarea.addEventListener('input', function() {
+      clearTimeout(timeout);
+      const delay = interval === 'immediate' ? 0 :
+                   interval === '3_seconds' ? 3000 : 5000;
+
+      timeout = setTimeout(() => {
+        // Simulate auto-save
+        fetch('<%= demo_action_path %>', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+          },
+          body: JSON.stringify({ action_type: 'data_saved' })
+        });
+      }, delay);
+    });
+  }
+
+  // Preview interactions
+  document.querySelectorAll('[data-preview]').forEach(element => {
+    const previewType = element.dataset.preview;
+
+    if (previewType === 'hover') {
+      element.addEventListener('mouseenter', () => {
+        // Simulate preview
+        console.log('Preview shown on hover');
+      });
+    } else if (previewType === 'click') {
+      element.addEventListener('click', () => {
+        // Simulate preview
+        console.log('Preview shown on click');
+        fetch('<%= demo_action_path %>', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+          },
+          body: JSON.stringify({ action_type: 'preview_used' })
+        });
+      });
+    }
+  });
+});
+</script>

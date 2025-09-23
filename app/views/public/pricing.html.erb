@@ -1,0 +1,73 @@
+<div class="container mx-auto px-4 py-8">
+  <header class="<%= header_style_class %>">
+    <h1>Pricing Plans</h1>
+  </header>
+
+  <div class="mt-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="bg-white p-6 rounded-lg shadow border">
+        <h3 class="text-xl font-bold mb-4">Free</h3>
+        <div class="text-3xl font-bold mb-4">$0<span class="text-base font-normal">/month</span></div>
+        <ul class="space-y-2 mb-6">
+          <li>✓ Up to 10 todos</li>
+          <li>✓ Basic priority levels</li>
+          <li>✓ Web access</li>
+        </ul>
+        <%= link_to "Get Started", signup_path, class: button_color_class + " px-6 py-2 rounded font-semibold w-full text-center block" %>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow border-2 border-blue-500 relative">
+        <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
+          Popular
+        </div>
+        <h3 class="text-xl font-bold mb-4">Pro</h3>
+        <div class="text-3xl font-bold mb-4">$9<span class="text-base font-normal">/month</span></div>
+        <ul class="space-y-2 mb-6">
+          <li>✓ Unlimited todos</li>
+          <li>✓ Advanced priorities</li>
+          <li>✓ Team collaboration</li>
+          <li>✓ Mobile apps</li>
+        </ul>
+        <%= link_to "Choose Pro", signup_path, class: button_color_class + " px-6 py-2 rounded font-semibold w-full text-center block" %>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow border">
+        <h3 class="text-xl font-bold mb-4">Enterprise</h3>
+        <div class="text-3xl font-bold mb-4">$29<span class="text-base font-normal">/month</span></div>
+        <ul class="space-y-2 mb-6">
+          <li>✓ Everything in Pro</li>
+          <li>✓ Advanced analytics</li>
+          <li>✓ SSO integration</li>
+          <li>✓ Priority support</li>
+        </ul>
+        <%= link_to "Contact Sales", contact_path, class: "px-6 py-2 border border-gray-300 rounded font-semibold hover:bg-gray-50 w-full text-center block" %>
+      </div>
+    </div>
+
+    <div class="mt-12 text-center">
+      <h2 class="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
+      <div class="max-w-2xl mx-auto space-y-4">
+        <div class="bg-white p-4 rounded-lg shadow">
+          <h4 class="font-semibold">Can I upgrade or downgrade anytime?</h4>
+          <p class="text-gray-600 mt-2">Yes, you can change your plan at any time. Changes take effect immediately.</p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow">
+          <h4 class="font-semibold">Is there a free trial?</h4>
+          <p class="text-gray-600 mt-2">The Free plan is available indefinitely. Pro and Enterprise plans offer a 14-day free trial.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="mt-12 pt-8 border-t">
+    <%= footer_content_html %>
+    <div class="mt-4 text-center">
+      <%= link_to "Footer Action Test", pricing_path(footer_action: true), class: "text-blue-600 hover:text-blue-800 underline text-sm" %>
+    </div>
+  </footer>
+
+  <div class="mt-8 text-center text-sm text-gray-500">
+    <p>Button Color: <span class="font-mono"><%= @button_color %></span></p>
+    <p>Footer Content: <span class="font-mono"><%= @footer_content %></span></p>
+  </div>
+</div>

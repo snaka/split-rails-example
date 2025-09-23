@@ -1,0 +1,65 @@
+<div class="container mx-auto px-4 py-8">
+  <header class="<%= header_style_class %>">
+    <h1>Features</h1>
+  </header>
+
+  <div class="mt-8 flex">
+    <aside class="<%= sidebar_layout_class %> bg-blue-50 p-4 rounded mr-6">
+      <h3 class="font-semibold mb-4">Navigation</h3>
+      <ul class="space-y-2">
+        <li><a href="#productivity" class="text-blue-600 hover:text-blue-800">Productivity</a></li>
+        <li><a href="#collaboration" class="text-blue-600 hover:text-blue-800">Collaboration</a></li>
+        <li><a href="#analytics" class="text-blue-600 hover:text-blue-800">Analytics</a></li>
+      </ul>
+    </aside>
+
+    <main class="flex-1">
+      <section id="productivity" class="mb-12">
+        <h2 class="text-2xl font-bold mb-4">Boost Your Productivity</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-lg font-semibold mb-2">Smart Priority System</h3>
+            <p>Organize your tasks with our intelligent priority system that adapts to your workflow.</p>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-lg font-semibold mb-2">Quick Actions</h3>
+            <p>Perform bulk operations on multiple todos with our streamlined interface.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="collaboration" class="mb-12">
+        <h2 class="text-2xl font-bold mb-4">Team Collaboration</h2>
+        <div class="bg-white p-6 rounded-lg shadow">
+          <p>Work together seamlessly with shared todo lists, real-time updates, and team dashboards.</p>
+          <%= link_to "Start Collaborating", features_path(explore: true), class: button_color_class + " px-4 py-2 rounded mt-4 inline-block" %>
+        </div>
+      </section>
+
+      <section id="analytics" class="mb-12">
+        <h2 class="text-2xl font-bold mb-4">Data Visualization</h2>
+        <div class="bg-gray-100 p-6 rounded-lg">
+          <% case @data_visualization %>
+          <% when "charts" %>
+            <div class="h-32 bg-gradient-to-r from-blue-400 to-purple-500 rounded flex items-center justify-center text-white font-semibold">
+              📊 Interactive Charts View
+            </div>
+          <% when "graphs" %>
+            <div class="h-32 bg-gradient-to-r from-green-400 to-blue-500 rounded flex items-center justify-center text-white font-semibold">
+              📈 Dynamic Graphs View
+            </div>
+          <% when "tables" %>
+            <div class="h-32 bg-gradient-to-r from-purple-400 to-pink-500 rounded flex items-center justify-center text-white font-semibold">
+              📋 Detailed Tables View
+            </div>
+          <% end %>
+          <p class="mt-4">Current visualization: <span class="font-mono text-sm"><%= @data_visualization %></span></p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="mt-8 text-center">
+    <p class="text-gray-600">Sidebar Layout: <span class="font-mono text-sm"><%= @sidebar_layout %></span></p>
+  </div>
+</div>

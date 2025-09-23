@@ -1,0 +1,45 @@
+<div class="container mx-auto px-4 py-8">
+  <header class="<%= header_style_class %>">
+    <h1>About Todo App</h1>
+    <%= theme_switcher_html %>
+  </header>
+
+  <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <main class="lg:col-span-2">
+      <section class="prose max-w-none">
+        <h2>Welcome to Our Todo Application</h2>
+        <p>This is a modern todo application built with Ruby on Rails, featuring A/B testing capabilities for optimal user experience.</p>
+
+        <h3>Features</h3>
+        <ul>
+          <li>Create and manage todo tasks</li>
+          <li>Priority levels for better organization</li>
+          <li>User authentication and authorization</li>
+          <li>A/B testing for continuous improvement</li>
+        </ul>
+
+        <div class="mt-6">
+          <%= link_to "Get Started", signup_path, class: button_color_class + " px-6 py-2 rounded font-semibold" %>
+          <%= link_to "Learn More", features_path, class: "ml-4 px-6 py-2 border border-gray-300 rounded font-semibold hover:bg-gray-50" %>
+        </div>
+
+        <div class="mt-4">
+          <%= link_to "Engage with us!", about_path(engage: true), class: "text-blue-600 hover:text-blue-800 underline" %>
+        </div>
+      </section>
+    </main>
+
+    <aside class="<%= sidebar_layout_class %> bg-gray-50 p-4 rounded">
+      <h3 class="font-semibold mb-4">Quick Stats</h3>
+      <div class="space-y-2">
+        <p>Header Style: <span class="font-mono text-sm"><%= @header_style %></span></p>
+        <p>Theme Switcher: <span class="font-mono text-sm"><%= @theme_switcher %></span></p>
+        <p>Button Color: <span class="font-mono text-sm"><%= button_color_variant %></span></p>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="mt-12 pt-8 border-t">
+    <%= footer_content_html %>
+  </footer>
+</div>

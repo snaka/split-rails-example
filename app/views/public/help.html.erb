@@ -1,0 +1,102 @@
+<div class="container mx-auto px-4 py-8">
+  <header class="<%= header_style_class %>">
+    <h1>Help Center</h1>
+  </header>
+
+  <div class="mt-8">
+    <div class="mb-6">
+      <%= form_with url: help_path, method: :get, local: true, class: "flex gap-4" do |form| %>
+        <%= form.text_field :search, value: params[:search], placeholder: search_placeholder_text, class: "flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+        <%= form.submit "Search", class: button_color_class + " px-4 py-2 rounded font-semibold" %>
+      <% end %>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2">
+        <section class="mb-8">
+          <h2 class="text-xl font-bold mb-4">Getting Started</h2>
+          <div class="space-y-4">
+            <div class="bg-white p-4 rounded-lg shadow">
+              <h3 class="font-semibold">Creating Your First Todo</h3>
+              <p class="text-gray-600 mt-2">Learn how to create and organize your first todo item.</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+              <h3 class="font-semibold">Setting Priorities</h3>
+              <p class="text-gray-600 mt-2">Understand how to use our priority system effectively.</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+              <h3 class="font-semibold">Managing Your Account</h3>
+              <p class="text-gray-600 mt-2">Update your profile and account settings.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-8">
+          <h2 class="text-xl font-bold mb-4">Advanced Features</h2>
+          <div class="space-y-4">
+            <div class="bg-white p-4 rounded-lg shadow">
+              <h3 class="font-semibold">Keyboard Shortcuts</h3>
+              <% case @keyboard_shortcuts %>
+              <% when "enabled" %>
+                <div class="mt-2 p-3 bg-blue-50 rounded">
+                  <p class="text-sm font-medium mb-2">Available shortcuts:</p>
+                  <ul class="text-sm text-gray-600 space-y-1">
+                    <li><kbd class="px-1 py-0.5 bg-gray-200 rounded text-xs">Ctrl+N</kbd> - New todo</li>
+                    <li><kbd class="px-1 py-0.5 bg-gray-200 rounded text-xs">Ctrl+S</kbd> - Save</li>
+                    <li><kbd class="px-1 py-0.5 bg-gray-200 rounded text-xs">Ctrl+?</kbd> - Help</li>
+                  </ul>
+                  <%= link_to "Test Shortcut", help_path(shortcut: true), class: "text-blue-600 hover:text-blue-800 underline text-sm mt-2 inline-block" %>
+                </div>
+              <% when "disabled" %>
+                <p class="text-gray-600 mt-2">Keyboard shortcuts are currently disabled for this session.</p>
+              <% when "help_tooltip" %>
+                <div class="mt-2 p-3 bg-yellow-50 rounded">
+                  <p class="text-sm">💡 <strong>Tip:</strong> Press <kbd class="px-1 py-0.5 bg-gray-200 rounded text-xs">?</kbd> anywhere to see available shortcuts!</p>
+                  <%= link_to "Show Help", help_path(shortcut: true), class: "text-blue-600 hover:text-blue-800 underline text-sm mt-2 inline-block" %>
+                </div>
+              <% end %>
+            </div>
+
+            <div class="bg-white p-4 rounded-lg shadow">
+              <h3 class="font-semibold">Accessibility Features</h3>
+              <% case @accessibility_mode %>
+              <% when "standard" %>
+                <p class="text-gray-600 mt-2">Standard accessibility features are enabled.</p>
+              <% when "high_contrast" %>
+                <div class="mt-2 p-3 bg-gray-900 text-white rounded">
+                  <p class="text-sm">High contrast mode is active for better visibility.</p>
+                </div>
+              <% when "large_text" %>
+                <div class="mt-2 p-3 bg-blue-50 rounded text-lg">
+                  <p>Large text mode is enabled for easier reading.</p>
+                </div>
+              <% end %>
+              <%= link_to "Test Accessibility", help_path(accessibility: true), class: "text-blue-600 hover:text-blue-800 underline text-sm mt-2 inline-block" %>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="lg:col-span-1">
+        <div class="bg-gray-50 p-6 rounded-lg">
+          <h3 class="font-semibold mb-4">Quick Links</h3>
+          <ul class="space-y-2">
+            <li><%= link_to "Contact Support", contact_path, class: "text-blue-600 hover:text-blue-800" %></li>
+            <li><%= link_to "Feature Requests", "#", class: "text-blue-600 hover:text-blue-800" %></li>
+            <li><%= link_to "Report a Bug", "#", class: "text-blue-600 hover:text-blue-800" %></li>
+            <li><%= link_to "System Status", "#", class: "text-blue-600 hover:text-blue-800" %></li>
+          </ul>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow mt-6">
+          <h3 class="font-semibold mb-4">Current Session Info</h3>
+          <div class="space-y-2 text-sm">
+            <p>Search Placeholder: <span class="font-mono"><%= @search_placeholder %></span></p>
+            <p>Keyboard Shortcuts: <span class="font-mono"><%= @keyboard_shortcuts %></span></p>
+            <p>Accessibility Mode: <span class="font-mono"><%= @accessibility_mode %></span></p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>

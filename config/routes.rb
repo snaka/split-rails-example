@@ -10,6 +10,16 @@ Rails.application.routes.draw do
   delete "logout", to: "sessions#destroy"
   get "signup", to: "users#new"
 
+  # Public pages for A/B testing
+  get "about", to: "public#about"
+  get "features", to: "public#features"
+  get "pricing", to: "public#pricing"
+  get "contact", to: "public#contact"
+  get "help", to: "public#help"
+  get "demo", to: "public#demo"
+  post "demo/action", to: "public#demo_action"
+  post "contact", to: "public#contact_submit"
+
   # Split dashboard
   mount Split::Dashboard, at: "split"
 
