@@ -96,7 +96,8 @@ class SplitTestResultsCleaner
   end
 
   def clear_alternative_results(alternative, experiment)
-    key = alternative.key
+    # Build key manually since key method is private
+    key = "#{alternative.experiment_name}:#{alternative.name}"
 
     # Fields to clear for result data
     result_fields = %w[participant_count completed_count]
