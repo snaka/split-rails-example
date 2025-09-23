@@ -53,3 +53,7 @@ Access the Split dashboard at `/split` to:
 - **URL**: `/split`
 - **Username**: `admin`
 - **Password**: `secret`
+
+## Scripts
+
+For additional utilities and testing scripts, see [scripts/README.md](scripts/README.md).
