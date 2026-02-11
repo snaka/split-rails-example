@@ -57,3 +57,9 @@ Access the Split dashboard at `/split` to:
 ## Scripts
 
 For additional utilities and testing scripts, see [scripts/README.md](scripts/README.md).
+
+## Documentation
+
+For detailed documentation on specific topics:
+
+- [Split Dashboard Cache Issue in Multi-Process Environment](docs/split-multiprocess-cache-issue.md) - Reproduction guide for cache inconsistency issues when running with multiple worker processes

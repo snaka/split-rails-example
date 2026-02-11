@@ -39,3 +39,21 @@ plugin :solid_queue if ENV["SOLID_QUEUE_IN_PUMA"]
 # Specify the PID file. Defaults to tmp/pids/server.pid in development.
 # In other environments, only set the PID file if requested.
 pidfile ENV["PIDFILE"] if ENV["PIDFILE"]
+
+# Cluster mode configuration for testing Split gem multi-process behavior
+# Set WEB_CONCURRENCY environment variable to enable multiple workers
+workers ENV.fetch("WEB_CONCURRENCY", 1).to_i
+
+# Preload the application before starting workers
+# This reduces memory usage through copy-on-write
+preload_app!
+
+# Code to run before forking workers
+before_fork do
+  ActiveRecord::Base.connection_pool.disconnect! if defined?(ActiveRecord)
+end
+
+# Code to run in each worker after fork
+on_worker_boot do
+  ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
+end

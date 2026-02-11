@@ -10,6 +10,9 @@ Split.configure do |config|
   config.persistence = :cookie
   config.persistence_cookie_length = 2592000
 
+  config.dashboard_pagination_default_per_page = 100
+  config.cache = true
+
   config.experiments = {
     "todo_list_layout" => {
       alternatives: ["card_view", "list_view", "grid_view"],
